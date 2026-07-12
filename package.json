@@ -1,0 +1,15 @@
+{
+  "name": "sphere-echo-tip-agent",
+  "version": "1.0.0",
+  "description": "Minimal Sphere SDK agent: echoes DMs and sends testnet tips on keyword",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@unicitylabs/sphere-sdk": "^0.11.9",
+    "dotenv": "^16.4.5",
+    "ws": "^8.18.0"
+  }
+}
