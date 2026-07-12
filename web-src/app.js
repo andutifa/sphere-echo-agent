@@ -13,6 +13,7 @@ const log = (msg) => {
 };
 
 let client = null;
+let uctCoinId = null;
 
 function setConnected(identity) {
   $('status').textContent = 'Connected';
@@ -68,6 +69,7 @@ async function refreshBalance() {
   try {
     const assets = await client.query('sphere_getAssets');
     const uct = Array.isArray(assets) ? assets.find((a) => a.symbol === 'UCT') : null;
+    if (uct?.coinId) uctCoinId = uct.coinId;
     $('balance').textContent = uct ? `${(Number(uct.totalAmount) / 1e18).toFixed(4)} UCT` : '0 UCT';
   } catch (err) {
     log(`Could not read balance: ${err.message || err}`);
@@ -79,7 +81,7 @@ async function sendTipRequest() {
   const recipientBot = $('botTag').value.trim() || '@andutbot99';
   try {
     log(`Sending DM "minta tip dong" to ${recipientBot}…`);
-    await client.intent('dm', { to: recipientBot, content: 'minta tip dong' });
+    await client.intent('dm', { to: recipientBot, message: 'minta tip dong' });
     log('DM sent. Watch your Sphere chat for the bot\'s reply.');
   } catch (err) {
     log(`Failed to send DM: ${err.message || err}`);
@@ -94,10 +96,14 @@ async function sendDirectTip() {
     log('Enter a recipient nametag and an amount first.');
     return;
   }
+  if (!uctCoinId) {
+    log('Still resolving UCT coin ID — click "Refresh balance" first, then try Send again.');
+    return;
+  }
   try {
     log(`Requesting wallet approval to send ${amount} UCT to ${recipient}…`);
     const amountSmallestUnit = BigInt(Math.round(Number(amount) * 1e18)).toString();
-    const result = await client.intent('send', { to: recipient, amount: amountSmallestUnit, coinId: 'UCT' });
+    const result = await client.intent('send', { to: recipient, amount: amountSmallestUnit, coinId: uctCoinId });
     log(`Send result: ${result?.status || 'submitted'}.`);
     await refreshBalance();
   } catch (err) {
