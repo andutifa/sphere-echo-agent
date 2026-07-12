@@ -79,7 +79,7 @@ async function sendTipRequest() {
   const recipientBot = $('botTag').value.trim() || '@andutbot99';
   try {
     log(`Sending DM "minta tip dong" to ${recipientBot}…`);
-    await client.intent('dm', { recipient: recipientBot, content: 'minta tip dong' });
+    await client.intent('dm', { to: recipientBot, content: 'minta tip dong' });
     log('DM sent. Watch your Sphere chat for the bot\'s reply.');
   } catch (err) {
     log(`Failed to send DM: ${err.message || err}`);
@@ -97,7 +97,7 @@ async function sendDirectTip() {
   try {
     log(`Requesting wallet approval to send ${amount} UCT to ${recipient}…`);
     const amountSmallestUnit = BigInt(Math.round(Number(amount) * 1e18)).toString();
-    const result = await client.intent('send', { recipient, amount: amountSmallestUnit, coinId: 'UCT' });
+    const result = await client.intent('send', { to: recipient, amount: amountSmallestUnit, coinId: 'UCT' });
     log(`Send result: ${result?.status || 'submitted'}.`);
     await refreshBalance();
   } catch (err) {
